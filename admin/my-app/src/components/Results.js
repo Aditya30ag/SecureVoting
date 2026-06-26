@@ -1,10 +1,11 @@
-import React,{useContext,useEffect,useNavigate, useState} from 'react'
+import React,{useContext,useEffect, useState} from 'react'
+import { useNavigate } from "react-router-dom";
 import Notecontext from "../context/notes/NotesContext";
 import Resultitems from './Resultitems';
 
 export default function Results() {
     const a = useContext(Notecontext);
-    const navigate=useNavigate;
+    const navigate = useNavigate();
     const [winner,setwinner]=useState({name:"",voteCount:0});
 
     useEffect(() => {
