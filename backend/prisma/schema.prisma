@@ -1,0 +1,36 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Admin {
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  password String
+  notes    Notes[]
+}
+
+model User {
+  id           Int     @id @default(autoincrement())
+  aadharNumber String  @unique
+  voterid      BigInt
+  isvoted      Boolean @default(false)
+  otp          Int     @default(123456)
+  name         String?
+  email        String?
+  photoUrl     String?
+}
+
+model Notes {
+  id        Int    @id @default(autoincrement())
+  name      String @unique
+  party     String
+  voteCount Int    @default(0)
+  adminId   Int?
+  admin     Admin? @relation(fields: [adminId], references: [id])
+}

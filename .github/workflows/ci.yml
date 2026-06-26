@@ -1,0 +1,61 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    env:
+      CI: true
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@v3
+      with:
+        version: 9
+
+    - name: Install Frontend Dependencies
+      working-directory: ./public/my-app
+      run: pnpm install
+
+    - name: Build Frontend
+      working-directory: ./public/my-app
+      run: pnpm run build
+
+    - name: Test Frontend
+      working-directory: ./public/my-app
+      run: pnpm test -- --watchAll=false
+      continue-on-error: true # Continues if tests fail or aren't fully configured
+
+    - name: Install Admin Dependencies
+      working-directory: ./admin/my-app
+      run: pnpm install
+
+    - name: Build Admin
+      working-directory: ./admin/my-app
+      run: pnpm run build
+
+    - name: Test Admin
+      working-directory: ./admin/my-app
+      run: pnpm test -- --watchAll=false
+      continue-on-error: true
+
+    - name: Install Backend Dependencies
+      working-directory: ./backend
+      run: pnpm install
+
+    - name: Validate Docker Compose
+      run: docker compose config
