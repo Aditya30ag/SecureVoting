@@ -61,6 +61,9 @@ jobs:
       working-directory: ./backend
       run: pnpm install --no-frozen-lockfile
 
+    - name: Create dummy .env for Docker Compose validation
+      run: touch ./backend/.env
+
     - name: Validate Docker Compose
       run: docker compose config
 
