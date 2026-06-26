@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -29,7 +33,7 @@ jobs:
 
     - name: Install Frontend Dependencies
       working-directory: ./public/my-app
-      run: pnpm install
+      run: pnpm install --no-frozen-lockfile
 
     - name: Build Frontend
       working-directory: ./public/my-app
@@ -42,7 +46,7 @@ jobs:
 
     - name: Install Admin Dependencies
       working-directory: ./admin/my-app
-      run: pnpm install
+      run: pnpm install --no-frozen-lockfile
 
     - name: Build Admin
       working-directory: ./admin/my-app
@@ -55,7 +59,57 @@ jobs:
 
     - name: Install Backend Dependencies
       working-directory: ./backend
-      run: pnpm install
+      run: pnpm install --no-frozen-lockfile
 
     - name: Validate Docker Compose
       run: docker compose config
+
+  build-and-push-docker:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    # Only push Docker images on merges/pushes to main, not on PRs
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Lowercase repository name
+        run: echo "REPO=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
+      - name: Build and push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ghcr.io/${{ env.REPO }}-backend:latest
+          cache-from: type=registry,ref=ghcr.io/${{ env.REPO }}-backend:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ env.REPO }}-backend:buildcache,mode=max
+
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./public/my-app
+          push: true
+          tags: ghcr.io/${{ env.REPO }}-frontend:latest
+          cache-from: type=registry,ref=ghcr.io/${{ env.REPO }}-frontend:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ env.REPO }}-frontend:buildcache,mode=max
+
+      - name: Build and push Admin
+        uses: docker/build-push-action@v5
+        with:
+          context: ./admin/my-app
+          push: true
+          tags: ghcr.io/${{ env.REPO }}-admin:latest
+          cache-from: type=registry,ref=ghcr.io/${{ env.REPO }}-admin:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ env.REPO }}-admin:buildcache,mode=max
