@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
-import { Building2, Camera, Lock, Shield, AlertCircle, KeyRound } from "lucide-react";
+import { Building2, KeyRound } from "lucide-react";
 import axios from "axios";
 
 const Otp = () => {

@@ -98,6 +98,7 @@ export default function Content(props) {
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const StatusMessage = ({ type, message }) => {
     if (!message) return null;
     
