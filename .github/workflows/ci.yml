@@ -61,8 +61,26 @@ jobs:
       working-directory: ./backend
       run: pnpm install --no-frozen-lockfile
 
-    - name: Create dummy .env for Docker Compose validation
-      run: touch ./backend/.env
+    - name: Create .env.development for CI validation
+      run: |
+        cat > ./backend/.env.development << 'EOF'
+        NODE_ENV=development
+        PORT=5000
+        DATABASE_URL=postgresql://postgres:voteapp@db:5432/voteapp?schema=public
+        REDIS_URL=redis://redis:6379
+        REDIS_HOST=redis
+        REDIS_PORT=6379
+        MINIO_ENDPOINT=minio
+        MINIO_PORT=9000
+        MINIO_ACCESS_KEY=ci_access_key
+        MINIO_SECRET_KEY=ci_secret_key
+        JWT_SECRET=ci-jwt-secret-not-for-production
+        OTP_SECRET=ci-otp-secret-not-for-production
+        TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        TWILIO_AUTH_TOKEN=ci_placeholder
+        TWILIO_PHONE_NUMBER=+10000000000
+        TWILIO_SERVICE_SID=VAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        EOF
 
     - name: Validate Docker Compose
       run: docker compose config

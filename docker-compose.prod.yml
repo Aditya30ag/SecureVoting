@@ -44,7 +44,8 @@ services:
     environment:
       - NODE_ENV=production
     env_file:
-      - ./backend/.env.production
+      - path: ./backend/.env.production
+        required: false
     depends_on:
       - db
       - redis

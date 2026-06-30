@@ -53,7 +53,8 @@ services:
       - MINIO_ACCESS_KEY=admin
       - MINIO_SECRET_KEY=adminpassword
     env_file:
-      - ./backend/.env.development
+      - path: ./backend/.env.development
+        required: false
     volumes:
       - ./backend:/app
       - /app/node_modules
