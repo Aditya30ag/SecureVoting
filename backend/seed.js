@@ -1,3 +1,4 @@
+require('./env'); // Load .env.development or .env.production based on NODE_ENV
 const bcrypt = require('bcryptjs');
 const { prisma } = require('./db');
 

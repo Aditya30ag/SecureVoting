@@ -1,5 +1,5 @@
 const { Queue, Worker } = require('bullmq');
-require('dotenv').config();
+// env vars are loaded centrally by server.ts / env.js before this module is required
 
 // BullMQ uses ioredis internally. We can just pass the connection options.
 const connection = {

@@ -13,6 +13,7 @@ router.post(
     body("password", "enter the valid password").isLength({ min: 3 }),
   ],
   async (req, res) => {
+    let success = false;
     const result = validationResult(req);
     if (!result.isEmpty()) {
       success = false;
@@ -44,7 +45,7 @@ router.post(
           id: admin.id,
         },
       };
-      var token1 = jwt.sign(data, "shhhhh");
+      var token1 = jwt.sign(data, process.env.JWT_SECRET);
       success = true;
       res.json({ success, token1 });
     } catch (error) {
@@ -61,6 +62,7 @@ router.post(
       body("password", "password cannot be blank").exists()
     ],
     async (req, res) => {
+      let success = false;
       const result = validationResult(req);
       if (!result.isEmpty()) {
         success = false;
@@ -90,7 +92,7 @@ router.post(
             id:admin.id
           }
          }
-        var token1 = jwt.sign(data, "shhhhh");
+        var token1 = jwt.sign(data, process.env.JWT_SECRET);
         success = true;
         res.json({ success, token1 });
       } catch (error) {

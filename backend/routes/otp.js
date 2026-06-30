@@ -1,19 +1,18 @@
-require('dotenv').config();
+// env vars are loaded centrally by server.ts / env.js before this module is required
 const express = require('express');
 const cors = require('cors');
 const twilio = require('twilio');
 const jwt = require('jsonwebtoken'); // Import JWT
 const router = express.Router();
 
-const SECRET_KEY = "your_secret_key";
+const SECRET_KEY = process.env.OTP_SECRET;
 
 
 // Load environment variables
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SERVICE_SID, PORT } = process.env;
 
 if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_SERVICE_SID) {
-    console.error("Twilio credentials are missing. Check your .env file!");
-    process.exit(1);
+    console.warn("⚠️  Twilio credentials are missing. OTP routes will not function.");
 }
 
 // Initialize Twilio Client

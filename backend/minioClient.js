@@ -1,5 +1,5 @@
 const Minio = require('minio');
-require('dotenv').config();
+// env vars are loaded centrally by server.ts / env.js before this module is required
 
 const minioClient = new Minio.Client({
     endPoint: process.env.MINIO_ENDPOINT || '127.0.0.1',

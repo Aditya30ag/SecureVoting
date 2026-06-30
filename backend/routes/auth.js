@@ -20,6 +20,7 @@ router.post(
     body("voterid", "enter the valid voterid").isLength({ min: 3 }),
   ],
   async (req, res) => {
+    let success = false;
     const result = validationResult(req);
     if (!result.isEmpty()) {
       success = false;
@@ -37,7 +38,7 @@ router.post(
       const salt = await bcrypt.genSaltSync(10);
       const secAadhar = await bcrypt.hash(req.body.aadharNumber, salt);
 
-      user = await User.create({
+      let user = await User.create({
         aadharNumber: secAadhar,
         voterid:req.body.voterid,
         isvoted: req.body.isvoted,
@@ -53,7 +54,7 @@ router.post(
           id: user.id,
         },
       };
-      var token = jwt.sign(data, "shhhhh");
+      var token = jwt.sign(data, process.env.JWT_SECRET);
       success = true;
       res.json({ success, token });
       await user.save();
@@ -72,6 +73,8 @@ router.post(
     body("voterid", "enter the valid voterid").isLength({ min: 3 }),
   ],
   async (req, res) => {
+    let success = false;
+    let success1 = false;
     const result = validationResult(req);
     if (!result.isEmpty()) {
       success = false;
@@ -117,7 +120,7 @@ router.post(
         }
        }
       var otp=user.otp;
-      var token = jwt.sign(data, "shhhhh");
+      var token = jwt.sign(data, process.env.JWT_SECRET);
       success = true;
       res.json({ success, token ,otp});
 
@@ -131,7 +134,7 @@ router.post(
 router.post('/getuser',fetchuser,async(req,res)=>{
 
   try {
-    userId=req.user.id;
+    const userId = req.user.id;
     const user=await User.findById(userId).select("-password");
     if (!user) {
       return res.status(404).json({ error: "User not found" });
