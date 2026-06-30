@@ -24,7 +24,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '22'
 
     - name: Install pnpm
       uses: pnpm/action-setup@v3
@@ -112,6 +112,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./backend
+          file: ./backend/Dockerfile.prod
           push: true
           tags: ghcr.io/${{ env.REPO }}-backend:latest
           cache-from: type=registry,ref=ghcr.io/${{ env.REPO }}-backend:buildcache
@@ -121,6 +122,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./public/my-app
+          file: ./public/my-app/Dockerfile.prod
           push: true
           tags: ghcr.io/${{ env.REPO }}-frontend:latest
           cache-from: type=registry,ref=ghcr.io/${{ env.REPO }}-frontend:buildcache
@@ -130,6 +132,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./admin/my-app
+          file: ./admin/my-app/Dockerfile.prod
           push: true
           tags: ghcr.io/${{ env.REPO }}-admin:latest
           cache-from: type=registry,ref=ghcr.io/${{ env.REPO }}-admin:buildcache
